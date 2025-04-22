@@ -1,3 +1,4 @@
+--describe database
 DESCRIBE student_grades_db.students;
 
 -- Count of students with GPA < 3, grouped by GPA
@@ -8,41 +9,40 @@ GROUP BY gpa;
 
 --  average GPA per grade level
 WITH avg_gpa AS (
-    SELECT 
-        grade_level, 
-        AVG(gpa) AS average_gpa 
-    FROM student_grades_db.students
-    GROUP BY grade_level
-)
-SELECT * 
-FROM avg_gpa;
+SELECT 
+ grade_level, 
+ AVG(gpa) AS average_gpa 
+FROM student_grades_db.students
+GROUP BY grade_level)
+SELECT * FROM avg_gpa;
 
--- count students by range
+-- students count  by range
 WITH student_count AS (
-    SELECT 
-	CASE WHEN gpa < 3 THEN 'Below 3.0'
-	     WHEN gpa >= 3 THEN 'Above or equal to 3.0'
+SELECT CASE WHEN gpa < 3 THEN 'Below 3.0'
+	WHEN gpa >= 3 THEN 'Above or equal to 3.0'
         END AS gpa_range,
         COUNT(student_id) AS student_count
     FROM student_grades_db.students
     GROUP BY gpa_range
 )
-SELECT * 
-FROM student_count;
+SELECT * FROM student_count;
 
-
+--List of Students with Below-Average GPA"
 SELECT student_name, gpa
 FROM student_grades_db.students
 WHERE gpa < (SELECT AVG(gpa) 
 FROM student_grades_db.students);
 
+--check for null value
 SELECT * FROM student_grades_db.students
 WHERE student_name IS NULL;
 
+--delete null values 
 DELETE FROM student_grades_db.students
 WHERE student_id IS NULL;
 COMMIT;
 
+--average GPA by Student
 SELECT 
     student_grades_db.students.student_id,
     student_grades_db.students.student_name,
@@ -52,6 +52,7 @@ LEFT JOIN student_grades_db.student_grades
     ON student_grades_db.students.student_id = student_grades_db.student_grades.student_id
 GROUP BY student_grades_db.students.student_id, student_grades_db.students.student_name;
 
+--mininimum final grade
 WITH min_final_grade AS (
     SELECT department, 
            class_name, 
@@ -61,6 +62,7 @@ WITH min_final_grade AS (
 )
 SELECT * FROM min_final_grade;
 
+--max final grade
 WITH max_final_grade AS (SELECT 
 department,
 class_name,
@@ -68,11 +70,15 @@ max(final_grade) AS max_final_grade
 FROM student_grades_db.student_grades
 GROUP BY department,class_name)
 SELECT * FROM max_final_grade;
--- 
-SELECT
+
+-- Status of student lunch by grade level
+SELECT 
+    grade_level,
     SUM(CASE WHEN school_lunch = 'Yes' THEN 1 ELSE 0 END) AS school_lunch_partakers,
-    SUM(CASE WHEN school_lunch = 'No' THEN 1 ELSE 0 END) AS  non_school_lunch
-FROM student_grades_db.students;
+    SUM(CASE WHEN school_lunch = 'No' THEN 1 ELSE 0 END) AS non_school_lunch
+FROM student_grades_db.students
+GROUP BY grade_level;
+
 -- group average grade by student_name
 SELECT 
   students.student_name,
