@@ -1,7 +1,7 @@
 # Analyzing-student-grade--SQL-project
 This project focused on analyzing student grades using SQL queries to generate insights and perform various calculations related to students' GPAs, course performance, and related data from maven student_grade database.
 
-#Project Overview
+# Project Overview
 The purpose of this project was to:
 
 Explore student grade data.
